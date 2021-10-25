@@ -5,23 +5,30 @@ CXXPREP=-c
 TOP_DIR=./.
 DEVICE_DIR=./device
 OBJ_DIR=./obj
+TEST_DIR=./tests
 
-DEPS=$(DEVICE_DIR)/hello_printer.h
-SRCS=$(DEVICE_DIR)/hello_printer.cc  # TODO - Add DEVICE_DIR to a path so that we can remove this
-DEVICE_OBJS=$(OBJ_DIR)/hello_printer.o
-MAIN_OBJ=$(OBJ_DIR)/main.o
-TARGET=mvc
+INCLUDES+=-Idevice
 
-all: build_msg $(TARGET)
+DEVICE_LIST+=hello_printer
 
-$(TARGET): $(DEVICE_OBJS) $(MAIN_OBJ)
+#TEST_LIST+=hello_printer_test
+TEST_LIST=$(addsuffix _test, $(DEVICE_LIST))
+
+DEVICE_STATIC_LIST_PREFIX=$(addprefix $(OBJ_DIR)/, $(DEVICE_LIST))  
+DEVICE_STATIC_LIST=$(addsuffix .o, $(DEVICE_STATIC_LIST_PREFIX))    # Used in Static Pattern Rule
+
+
+all: build_msg $(OBJ_DIR)/$(TEST_LIST)
+
+$(OBJ_DIR)/$(TEST_LIST): $(OBJ_DIR)/$(DEVICE_LIST).o $(OBJ_DIR)/$(TEST_LIST).o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(MAIN_OBJ): main.cc     # TODO - Make main.cc a variable
-	$(CXX) $(CXXPREP) $(CXXFLAGS) $^ -o $@
+$(OBJ_DIR)/$(TEST_LIST).o: $(TEST_DIR)/$(TEST_LIST).cc    
+	$(CXX) $(CXXPREP) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-$(DEVICE_OBJS): $(SRCS)
-	$(CXX) $(CXXPREP) $(CXXFLAGS) $^ -o $@
+# Static Pattern Rule, which only applys to DEVICE_LIST
+$(DEVICE_STATIC_LIST) : $(OBJ_DIR)/%.o : $(DEVICE_DIR)/%.cc
+	$(CXX) $(CXXPREP) $(CXXFLAGS) $< -o $@
 
 .PHONY:build_msg
 build_msg:
