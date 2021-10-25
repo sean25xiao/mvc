@@ -10,6 +10,7 @@ TEST_DIR=./tests
 INCLUDES+=-Idevice
 
 DEVICE_LIST+=hello_printer
+DEVICE_LIST+=fifo
 
 #TEST_LIST+=hello_printer_test
 TEST_LIST=$(addsuffix _test, $(DEVICE_LIST))
@@ -29,7 +30,7 @@ $(OBJ_DIR)/$(TEST_LIST).o: $(TEST_DIR)/$(TEST_LIST).cc
 	$(CXX) $(CXXPREP) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 # Static Pattern Rule, which only applys to DEVICE_LIST
-$(DEVICE_STATIC_LIST) : $(OBJ_DIR)/%.o : $(DEVICE_DIR)/%.cc
+$(DEVICE_STATIC_LIST) : $(OBJ_DIR)/%.o : $(DEVICE_DIR)/%.cc  #TODO: Add header files here
 	$(CXX) $(CXXPREP) $(CXXFLAGS) $< -o $@
 
 .PHONY:build_msg
