@@ -20,6 +20,8 @@ DEVICE_STATIC_LIST=$(addsuffix .o, $(DEVICE_STATIC_LIST_PREFIX))    # Used in St
 
 all: build_msg $(OBJ_DIR)/$(TEST_LIST)
 
+# TODO: Remove all OBJ_DIR and TEST_DIR variable to make it looks clean
+# TODO: Add commons
 $(OBJ_DIR)/$(TEST_LIST): $(OBJ_DIR)/$(DEVICE_LIST).o $(OBJ_DIR)/$(TEST_LIST).o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
